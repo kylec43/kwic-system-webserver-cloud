@@ -1,59 +1,8 @@
-from time import time
-from time import sleep
-
-
-class offset:
-	def __init__(self, id, value):
-		self.id = id
-		self.value = value
-
-def getOffsetShifts(line):
-
-
-	offsets = []
-
-	if len(line) != 0 and line[0] != ' ':
-		offsets.append(0)
-
-
-	for i in range(1, len(line), 1):
-
-		if line[i] != ' ' and line[i-1] == ' ':
-			offsets.append(i)
-		
-
-	return offsets
+import socket
 
 
 
-
-
-
-
-def getCircularShifts(line):
-
-	lis = line.split()
-
-	if len(lis) <= 1:
-		return lis
-
-	circularShifts = []
-	i = 0
-	while i < len(lis):
-		word = lis[0]
-		lis.pop(0)
-		lis.append(word)
-		shiftedLine = " ".join(lis)
-		circularShifts.append(shiftedLine)
-		i+=1
-
-	return circularShifts
-
-
-
-
-
-line = '''How old is Keith 
+xml_test_data = """How old is Keith 
 He How old is James 
 He is a year older than Keith but he looks younger 
 How your father 
@@ -199,53 +148,36 @@ Maybe some of it I think a lot of people blame TV and movies when the real probl
 Parents have a difficult job They have to bring up their children and usually have to work too
 Yes that true Your son is doing well at school is not he
 Yes he is He very hard working when he at school Then he comes home from school and does his homework before dinner After dinner he goes out with his friends
-So he not a bookworm It good that he has an outgoing personality Some kids are very quiet and introverted You wonder how they survive in the real world without their parents to support them'''
-
-lis = line.split('\n')
-
-start = time()
-for i in range(100):
-
-	physical_shifted_lines = []
-	for i in range(len(lis)):
-		physical_shifted_lines.append(getCircularShifts(lis[i]))
-finish = time()
-total = finish - start
-print('physical shift time: ', total)
+So he not a bookworm It good that he has an outgoing personality Some kids are very quiet and introverted You wonder how they survive in the real world without their parents to support them"""
 
 
-start = time()
-for i in range(100):
-
-	offsets = []
-	for i in range(len(lis)):
-		offsets.append([i,getOffsetShifts(lis[i])])
+noiseWords = 'a, an, the, and, or, of, to, be, is, in, out, by, as, at, off'
+xml_test_data = xml_test_data.encode('utf-8')
+noiseWords = noiseWords.encode('utf-8')
 
 
-finish = time()
-total = finish - start
-print('offset indices time:', total)
+print(xml_test_data)
+SERVER_IP = 'localhost'  
+PORT = 12000
+
+#Create Client Socket
+client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+#Connect to Server Socket
+client_socket.connect((SERVER_IP, PORT))
+
+#Send Message to Server
+client_socket.sendall(xml_test_data)
+print('sent')
+client_socket.recv(200)
+print('received')
+client_socket.sendall(noiseWords)
 
 
-start = time()
-for k in range(10000):
-	for i in range(len(line)):
-		w = line[i]
-finish = time()
-total = finish - start
-print('string:',total)
+#Recieve a response from the Server
+data = client_socket.recv(10000)
 
-lis = list(line)
+print('Received:', data.decode('utf-8'))
 
-start = time()
-for k in range(10000):
-	for i in range(len(lis)):
-		w = line[i]
-
-finish = time()
-total = finish - start
-print('list:',total)
-
-
-
-
+#Close connection
+client_socket.close()
