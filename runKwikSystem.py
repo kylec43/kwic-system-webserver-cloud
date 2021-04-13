@@ -37,7 +37,7 @@ def runKwicSystem(parent, connection, client_address):
 			keywords.append(UrlAndKeywords[i][1])
 
 		#get noiseWords
-		noiseWords = getNoiseWords(noiseWords)
+		noiseWordsList = getNoiseWords(noiseWords)
 
 
 
@@ -45,7 +45,7 @@ def runKwicSystem(parent, connection, client_address):
 
 
 		time_start = time.time()
-		circularShift = CircularShift(lineManager, noiseWords)
+		circularShift = CircularShift(lineManager, noiseWordsList)
 		time_end = time.time()
 		total_time = time_end-time_start
 		print("circular shift", total_time)
@@ -61,7 +61,8 @@ def runKwicSystem(parent, connection, client_address):
 
 		time_start = time.time()
 		kwicUrlKeywordsFormatted = formatDatabaseOutputString(urls, lineManager, sortedOffsets)
-		databaseController.upload(originalUrlKeywords, kwicUrlKeywordsFormatted)
+		noiseWords = formatDatabaseNoiseWords(noiseWords)
+		databaseController.upload(originalUrlKeywords, kwicUrlKeywordsFormatted, noiseWords)
 
 		time_end = time.time()
 		total_time = time_end-time_start
@@ -79,10 +80,10 @@ def runKwicSystem(parent, connection, client_address):
 	finally:
 		# Close the client connection after the try or except block
 		if success:
-			connection.sendall(Constants.SERVER_RESPONSE_SUCCESS.encode('utf-8'))
+			connection.sendall(Constants.SERVER_RESPONSE_UPLOAD_SUCCESS)
 		else:
 			print('failed')
-			connection.sendall(Constants.SERVER_RESPONSE_FAILURE.encode('utf-8'))
+			connection.sendall(Constants.SERVER_RESPONSE_UPLOAD_FAILURE)
 
 		connection.close()
 		print("Connection has been closed")
@@ -101,10 +102,8 @@ def getUrlAndKeywords(string):
 
 	return UrlAndKeywords
 
-def getNoiseWords(string):
-	noiseWords = re.split(' *,* *,+ *,* *| +', string)
-	if noiseWords[-1] == '': noiseWords.pop()
-	return noiseWords
+def getNoiseWords(noiseWords):
+	return noiseWords.split()
 
 
 
@@ -114,6 +113,11 @@ def formatDatabaseOutputString(urls, lineManager, offsets):
 		formattedData += (urls[offsets[i][0]] + ' ' + lineManager.getOffsetLine(offsets[i][0], offsets[i][1]) + '\n')
 
 	return formattedData
+
+
+def formatDatabaseNoiseWords(noiseWords):
+	return " ".join(getNoiseWords(noiseWords))
+	
 
 
 

@@ -49,8 +49,8 @@ class CircularShift:
 				k += 1		
 
 			if last_char != ' ':
-				self._offsets.append([i, offset_index])
-				
+				if word.lower() not in noiseWords:
+						self._offsets.append([i, offset_index])				
 			i+=1
 
 
