@@ -58,7 +58,7 @@ class DatabaseController:
 
 
 
-	def getUrlsKeywords(self, keywords):
+	def getQueryResults(self, keywords):
 		queryResults = ""
 		success = True
 		error = None
