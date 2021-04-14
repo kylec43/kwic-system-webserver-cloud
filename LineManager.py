@@ -3,9 +3,6 @@ class LineManager:
 	def __init__(self, lines):
 		self._lines = lines
 
-	def getLines(self):
-		return self._lines
-
 	def getLineCount(self):
 		return len(self._lines)
 
