@@ -4,7 +4,6 @@ from Alphabetizer import Alphabetizer
 import re
 import time
 import Constants
-import socket
 from DatabaseController import DatabaseController
 
 def kwicSystemDatabaseUpload(originalUrlKeywords, noiseWords):

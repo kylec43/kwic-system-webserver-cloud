@@ -1,4 +1,3 @@
-import socket
 import Constants
 import requests
 
