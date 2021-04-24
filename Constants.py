@@ -18,7 +18,7 @@ ARG_URL = u'url'
 ARG_NOISE_WORDS = u'noiseWords'
 ARG_KEYWORDS = u'keywords'
 
-DATABASE_URL = ''
+DATABASE_URL = 'https://database-manager-dot-kwic-project.uc.r.appspot.com'
 KWIC_WEBSERVER_URl = 'https://kwic-webserver-dot-kwic-project.uc.r.appspot.com'
 
 
