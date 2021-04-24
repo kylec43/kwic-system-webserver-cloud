@@ -1,7 +1,8 @@
 from flask import Flask, request
 import requests
+import Constants
 
-url = 'https://kwic-project.uc.r.appspot.com'
+url = Constants.DATABASE_URL
 
-r = requests.get(url, params={'data': 'echo this'})
+r = requests.get('https://kwic-project.uc.r.appspot.com', params={'data': 'echo this'})
 print(r.text)
