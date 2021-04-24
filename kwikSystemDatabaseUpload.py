@@ -7,27 +7,11 @@ import Constants
 import socket
 from DatabaseController import DatabaseController
 
-def runKwicSystem(parent, connection, client_address):
+def kwicSystemDatabaseUpload(originalUrlKeywords, noiseWords):
 
 	success = True
 	databaseController = DatabaseController()
 	try:
-		buffer_size = 500000
-		#Recieve input lines and noise words from client.
-		connection.settimeout(10)
-		originalUrlKeywords = connection.recv(buffer_size)
-		connection.sendall(b'received')
-		noiseWords = connection.recv(buffer_size)
-
-		#convert data to string!
-		originalUrlKeywords = originalUrlKeywords.decode('utf-8')
-		noiseWords = noiseWords.decode('utf-8')
-
-		print("Recieved data from client:", client_address)
-
-
-		total_time_start = time.time()
-
 		#get URL and Keywords
 		UrlAndKeywords = getUrlAndKeywords(originalUrlKeywords)
 		keywords = []
@@ -42,56 +26,28 @@ def runKwicSystem(parent, connection, client_address):
 
 
 		lineManager = LineManager(keywords)
-
-
-		time_start = time.time()
 		circularShift = CircularShift(lineManager, noiseWordsList)
-		time_end = time.time()
-		total_time = time_end-time_start
-		print("circular shift", total_time)
-
-		time_start = time.time()
-		print('offsets', len(circularShift.getOffsets()))
 		alphabetizer = Alphabetizer(lineManager, circularShift.getOffsets())
-		time_end = time.time()
-		total_time = time_end-time_start
-		print("alphabetizer", total_time)
 
 		sortedOffsets = alphabetizer.GetSortedOffsets()
 
-		time_start = time.time()
 		kwicUrlKeywordsFormatted = formatDatabaseOutputString(urls, lineManager, sortedOffsets)
 		noiseWords = formatDatabaseNoiseWords(noiseWords)
 
 		success = True
-		try:
-			databaseController.upload(originalUrlKeywords, kwicUrlKeywordsFormatted, noiseWords)
-		except Exception as e:
-			raise e
 
-		time_end = time.time()
-		total_time = time_end-time_start
-		print('output', total_time)
+		databaseController.upload(originalUrlKeywords, kwicUrlKeywordsFormatted, noiseWords)
 
-		total_time_end = time.time()
-		total_time = total_time_end - total_time_start
-		print('total time', total_time)
-		print('---------------------------------------------------')
 
-	except Exception as e:
+	except Exception:
 		success = False
-		print("Error has occured:", e)
 
 	finally:
 		# Close the client connection after the try or except block
 		if success:
-			connection.sendall(Constants.SERVER_RESPONSE_UPLOAD_SUCCESS)
+			return Constants.SERVER_RESPONSE_UPLOAD_SUCCESS
 		else:
-			print('failed')
-			connection.sendall(Constants.SERVER_RESPONSE_UPLOAD_FAILURE)
-
-		connection.close()
-		print("Connection has been closed")
+			return Constants.SERVER_RESPONSE_UPLOAD_FAILURE
 
 
 

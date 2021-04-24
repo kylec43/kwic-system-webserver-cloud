@@ -1,0 +1,2 @@
+service: kwic-webserver
+runtime: python37
