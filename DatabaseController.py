@@ -31,10 +31,7 @@ class DatabaseController:
 		queryResults = ""
 		success = True
 		error = None
-		try:
-
-
-			
+		try:	
 			queryResults = requests.get(Constants.DATABASE_URL, params={Constants.GET_ARG_KEYWORDS: keywords, Constants.GET_ARG_REQUEST_TYPE: Constants.REQUEST_TYPE_QUERY}, timeout=60)
 			if queryResults == Constants.SERVER_RESPONSE_QUERY_FAILURE:
 				raise Exception('SEARCH FAILURE')
